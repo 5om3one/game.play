@@ -1,1 +1,198 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow">
+    <title>AnswerHub - Gameplay Terminal</title>
+    <style>
+        body {
+            background-color: #000000;
+            color: #ffffff;
+            font-family: "Courier New", monospace;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+            height: 100vh;
+            box-sizing: border-box;
+            padding: 40px 20px;
+        }
 
+        /* ВЕРХНИЙ ТЕКСТ */
+        .header-text {
+            font-size: 24px;
+            font-weight: bold;
+            text-align: center;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            /* Имитация старого пиксельного рендеринга шрифта */
+            text-shadow: 2px 2px 0px #333;
+            user-select: none;
+        }
+
+        /* ЭКРАН ШУМА И ПЛЕЕРА (СКРЫТ ПО УМОЛЧАНИЮ) */
+        .result-screen {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-color: #000;
+            z-index: 9999;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+
+        /* Визуальный шум на весь экран */
+        .static-noise {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background-image: url('https://wikimedia.org');
+            opacity: 0.15;
+            pointer-events: none;
+        }
+
+        .audio-container {
+            position: relative;
+            z-index: 10000;
+            text-align: center;
+            background: #111;
+            border: 2px solid #ff3333;
+            padding: 30px;
+        }
+
+        /* НИЖНИЙ БЛОК ГЕЙМПАДА */
+        .dpad-container {
+            margin-bottom: 20px;
+            user-select: none;
+        }
+
+        /* Сетка для сборки крестовины (3х3) */
+        .dpad {
+            display: grid;
+            grid-template-columns: 35px 70px 35px;
+            grid-template-rows: 40px 75px 40px;
+            align-items: center;
+            justify-items: center;
+        }
+
+        /* Базовый класс для кнопок-картинок */
+        .dpad-btn {
+            image-rendering: pixelated;
+            cursor: pointer;
+            -webkit-user-drag: none;
+        }
+
+        /* Точное позиционирование кнопок в сетке и их пропорциональный масштаб */
+        .btn-up {
+            grid-column: 2; grid-row: 1;
+            width: 70px; height: 40px; /* Соотношение 14:8 */
+        }
+        .btn-left {
+            grid-column: 1; grid-row: 2;
+            width: 35px; height: 75px; /* Соотношение 7:15 */
+        }
+        .btn-centre {
+            grid-column: 2; grid-row: 2;
+            width: 70px; height: 75px; /* Соотношение 14:14 (подогнано под сетку) */
+        }
+        .btn-right {
+            grid-column: 3; grid-row: 2;
+            width: 35px; height: 75px; /* Соотношение 7:15 */
+        }
+        .btn-down {
+            grid-column: 2; grid-row: 3;
+            width: 70px; height: 40px; /* Соотношение 14:8 */
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ВЕРХНИЙ ПИКСЕЛЬНЫЙ ТЕКСТ -->
+    <div class="header-text">
+        Женщина, Искусство, Испуг, Бессмыслица, Жизнь
+    </div>
+
+    <!-- ЭКРАН ПОСЛЕ ПРАВИЛЬНОГО ВВОДА -->
+    <div id="resultScreen" class="result-screen">
+        <div class="static-noise"></div>
+        <div class="audio-container">
+            <p style="color: #ff3333; font-weight: bold; margin-bottom: 20px;">СИГНАЛ ПЕРЕХВАЧЕН // ШУМ ОНАРУЖЕН</p>
+            <!-- Замените "arrows.mp3" на ваш файл со звуком слова arrows -->
+            <audio controls src="arrows.mp3" loop></audio>
+        </div>
+    </div>
+
+    <!-- КОНТЕНЕР ГЕЙМПАДА СНИЗУ -->
+    <div class="dpad-container">
+        <div class="dpad">
+            <!-- ВВЕРХ -->
+            <img src="up1.png" alt="Up" class="dpad-btn btn-up" 
+                 onmousedown="pressBtn(this, 'up2.png')" onmouseup="releaseBtn(this, 'up1.png', 'up')"
+                 onmouseleave="releaseBtn(this, 'up1.png')" ontouchstart="pressBtn(this, 'up2.png'); event.preventDefault();" ontouchend="releaseBtn(this, 'up1.png', 'up')">
+            
+            <!-- ЛЕВО -->
+            <img src="LeFt1.png" alt="Left" class="dpad-btn btn-left" 
+                 onmousedown="pressBtn(this, 'LeFt2.png')" onmouseup="releaseBtn(this, 'LeFt1.png', 'left')"
+                 onmouseleave="releaseBtn(this, 'LeFt1.png')" ontouchstart="pressBtn(this, 'LeFt2.png'); event.preventDefault();" ontouchend="releaseBtn(this, 'LeFt1.png', 'left')">
+            
+            <!-- ЦЕНТР -->
+            <img src="centre1.png" alt="Centre" class="dpad-btn btn-centre" 
+                 onmousedown="pressBtn(this, 'centre2.png')" onmouseup="releaseBtn(this, 'centre1.png', 'centre')"
+                 onmouseleave="releaseBtn(this, 'centre1.png')" ontouchstart="pressBtn(this, 'centre2.png'); event.preventDefault();" ontouchend="releaseBtn(this, 'centre1.png', 'centre')">
+            
+            <!-- ПРАВО -->
+            <img src="Right1.png" alt="Right" class="dpad-btn btn-right" 
+                 onmousedown="pressBtn(this, 'Right2.png')" onmouseup="releaseBtn(this, 'Right2.png', 'right')"
+                 onmouseleave="releaseBtn(this, 'Right1.png')" ontouchstart="pressBtn(this, 'Right2.png'); event.preventDefault();" ontouchend="releaseBtn(this, 'Right1.png', 'right')">
+            
+            <!-- НИЗ -->
+            <img src="down1.png" alt="Down" class="dpad-btn btn-down" 
+                 onmousedown="pressBtn(this, 'down2.png')" onmouseup="releaseBtn(this, 'down1.png', 'down')"
+                 onmouseleave="releaseBtn(this, 'down1.png')" ontouchstart="pressBtn(this, 'down2.png'); event.preventDefault();" ontouchend="releaseBtn(this, 'down1.png', 'down')">
+        </div>
+    </div>
+
+    <!-- ЛОГИКА ОБРАБОТКИ ПАРОЛЯ -->
+    <script>
+        // Правильная комбинация: Лево, Низ, Лево, Право, Низ
+        const correctSequence = ['left', 'down', 'left', 'right', 'down'];
+        let currentInputSequence = [];
+
+        // Визуальная смена кадров при зажатии кнопки
+        function pressBtn(element, activeSrc) {
+            element.src = activeSrc;
+        }
+
+        // Возврат кадра при отпускании и проверка шага
+        function releaseBtn(element, defaultSrc, direction) {
+            element.src = defaultSrc;
+            
+            // Если направление не передано (увели указку с кнопки), просто выходим
+            if (!direction) return;
+
+            // Определяем, какую позицию в пароле сейчас пытается ввести игрок
+            const nextCorrectIndex = currentInputSequence.length;
+
+            // Проверяем, совпадает ли нажатая кнопка с эталоном на этом шаге
+            if (direction === correctSequence[nextCorrectIndex]) {
+                currentInputSequence.push(direction);
+                
+                // Проверяем, введена ли вся комбинация до конца
+                if (currentInputSequence.length === correctSequence.length) {
+                    document.getElementById('resultScreen').style.display = 'flex';
+                }
+            } else {
+                // Если допущена ошибка — цепочка полностью сгорает
+                currentInputSequence = [];
+            }
+        }
+    </script>
+</body>
+</html>
