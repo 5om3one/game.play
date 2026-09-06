@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="robots" content="noindex, nofollow">
-    <title>AnswerHub - Gameplay Terminal</title>
+    <title>Game</title>
     <style>
         body {
             background-color: #000000;
@@ -18,22 +18,22 @@
             align-items: center;
             height: 100vh;
             box-sizing: border-box;
-            padding: 40px 20px;
+            padding: 60px 20px;
+            overflow: hidden;
         }
 
-        /* ВЕРХНИЙ ТЕКСТ */
+        /* ВЕРХНИЙ ПИКСЕЛЬНЫЙ ТЕКСТ */
         .header-text {
-            font-size: 24px;
+            font-size: 26px;
             font-weight: bold;
             text-align: center;
             letter-spacing: 2px;
             text-transform: uppercase;
-            /* Имитация старого пиксельного рендеринга шрифта */
             text-shadow: 2px 2px 0px #333;
             user-select: none;
         }
 
-        /* ЭКРАН ШУМА И ПЛЕЕРА (СКРЫТ ПО УМОЛЧАНИЮ) */
+        /* ЭКРАН ПОСЛЕ ПРАВИЛЬНОГО ВВОДА */
         .result-screen {
             display: none;
             position: fixed;
@@ -45,153 +45,137 @@
             z-index: 9999;
             justify-content: center;
             align-items: center;
-            flex-direction: column;
         }
 
-        /* Визуальный шум на весь экран */
-        .static-noise {
-            position: absolute;
+        /* ГИФКА НА ВЕСЬ ЭКРАН ПОСЛЕ ВВОДА */
+        .noise-gif-bg {
             width: 100%;
             height: 100%;
-            background-image: url('https://wikimedia.org');
-            opacity: 0.15;
-            pointer-events: none;
+            object-fit: cover;
         }
 
-        .audio-container {
-            position: relative;
-            z-index: 10000;
-            text-align: center;
-            background: #111;
-            border: 2px solid #ff3333;
-            padding: 30px;
-        }
-
-        /* НИЖНИЙ БЛОК ГЕЙМПАДА */
+        /* КРЕСТОВИНА ГЕЙМПАДА (УВЕЛИЧЕННАЯ) */
         .dpad-container {
-            margin-bottom: 20px;
+            margin-bottom: 40px;
             user-select: none;
         }
 
-        /* Сетка для сборки крестовины (3х3) */
         .dpad {
             display: grid;
-            grid-template-columns: 35px 70px 35px;
-            grid-template-rows: 40px 75px 40px;
+            /* Увеличенные пропорции под сетку с зазорами (gap) */
+            grid-template-columns: 60px 110px 60px;
+            grid-template-rows: 70px 120px 70px;
             align-items: center;
             justify-items: center;
+            gap: 15px; /* Большое расстояние между кнопками */
         }
 
-        /* Базовый класс для кнопок-картинок */
         .dpad-btn {
             image-rendering: pixelated;
             cursor: pointer;
             -webkit-user-drag: none;
         }
 
-        /* Точное позиционирование кнопок в сетке и их пропорциональный масштаб */
+        /* Размеры кнопок увеличены с сохранением ваших пропорций */
         .btn-up {
             grid-column: 2; grid-row: 1;
-            width: 70px; height: 40px; /* Соотношение 14:8 */
+            width: 110px; height: 63px; 
         }
         .btn-left {
             grid-column: 1; grid-row: 2;
-            width: 35px; height: 75px; /* Соотношение 7:15 */
+            width: 56px; height: 120px; 
         }
         .btn-centre {
             grid-column: 2; grid-row: 2;
-            width: 70px; height: 75px; /* Соотношение 14:14 (подогнано под сетку) */
+            width: 110px; height: 110px; 
         }
         .btn-right {
             grid-column: 3; grid-row: 2;
-            width: 35px; height: 75px; /* Соотношение 7:15 */
+            width: 56px; height: 120px; 
         }
         .btn-down {
             grid-column: 2; grid-row: 3;
-            width: 70px; height: 40px; /* Соотношение 14:8 */
+            width: 110px; height: 63px; 
         }
     </style>
 </head>
 <body>
 
-    <!-- ВЕРХНИЙ ПИКСЕЛЬНЫЙ ТЕКСТ -->
-    <div class="header-text">
+    <div class="header-text" id="headerText">
         Женщина, Искусство, Испуг, Бессмыслица, Жизнь
     </div>
 
-    <!-- ЭКРАН ПОСЛЕ ПРАВИЛЬНОГО ВВОДА -->
+    <!-- ЭКРАН ШУМА (ГИФКА NOISE.GIF) -->
     <div id="resultScreen" class="result-screen">
-        <div class="static-noise"></div>
-        <div class="audio-container">
-            <p style="color: #ff3333; font-weight: bold; margin-bottom: 20px;">СИГНАЛ ПЕРЕХВАЧЕН // ШУМ ОНАРУЖЕН</p>
-            <!-- Замените "arrows.mp3" на ваш файл со звуком слова arrows -->
-            <audio controls src="arrows.mp3" loop></audio>
-        </div>
+        <img src="noise.gif" alt="noise" class="noise-gif-bg">
     </div>
 
-    <!-- КОНТЕНЕР ГЕЙМПАДА СНИЗУ -->
     <div class="dpad-container">
         <div class="dpad">
             <!-- ВВЕРХ -->
             <img src="up1.png" alt="Up" class="dpad-btn btn-up" 
-                 onmousedown="pressBtn(this, 'up2.png')" onmouseup="releaseBtn(this, 'up1.png', 'up')"
-                 onmouseleave="releaseBtn(this, 'up1.png')" ontouchstart="pressBtn(this, 'up2.png'); event.preventDefault();" ontouchend="releaseBtn(this, 'up1.png', 'up')">
+                 onmousedown="p(this, 'up2.png')" onmouseup="r(this, 'up1.png', 11)"
+                 onmouseleave="r(this, 'up1.png')" ontouchstart="p(this, 'up2.png'); event.preventDefault();" ontouchend="r(this, 'up1.png', 11)">
             
             <!-- ЛЕВО -->
             <img src="LeFt1.png" alt="Left" class="dpad-btn btn-left" 
-                 onmousedown="pressBtn(this, 'LeFt2.png')" onmouseup="releaseBtn(this, 'LeFt1.png', 'left')"
-                 onmouseleave="releaseBtn(this, 'LeFt1.png')" ontouchstart="pressBtn(this, 'LeFt2.png'); event.preventDefault();" ontouchend="releaseBtn(this, 'LeFt1.png', 'left')">
+                 onmousedown="p(this, 'LeFt2.png')" onmouseup="r(this, 'LeFt1.png', 22)"
+                 onmouseleave="r(this, 'LeFt1.png')" ontouchstart="p(this, 'LeFt2.png'); event.preventDefault();" ontouchend="r(this, 'LeFt1.png', 22)">
             
             <!-- ЦЕНТР -->
             <img src="centre1.png" alt="Centre" class="dpad-btn btn-centre" 
-                 onmousedown="pressBtn(this, 'centre2.png')" onmouseup="releaseBtn(this, 'centre1.png', 'centre')"
-                 onmouseleave="releaseBtn(this, 'centre1.png')" ontouchstart="pressBtn(this, 'centre2.png'); event.preventDefault();" ontouchend="releaseBtn(this, 'centre1.png', 'centre')">
+                 onmousedown="p(this, 'centre2.png')" onmouseup="r(this, 'centre1.png', 33)"
+                 onmouseleave="r(this, 'centre1.png')" ontouchstart="p(this, 'centre2.png'); event.preventDefault();" ontouchend="r(this, 'centre1.png', 33)">
             
             <!-- ПРАВО -->
             <img src="Right1.png" alt="Right" class="dpad-btn btn-right" 
-                 onmousedown="pressBtn(this, 'Right2.png')" onmouseup="releaseBtn(this, 'Right2.png', 'right')"
-                 onmouseleave="releaseBtn(this, 'Right1.png')" ontouchstart="pressBtn(this, 'Right2.png'); event.preventDefault();" ontouchend="releaseBtn(this, 'Right1.png', 'right')">
+                 onmousedown="p(this, 'Right2.png')" onmouseup="r(this, 'Right1.png', 44)"
+                 onmouseleave="r(this, 'Right1.png')" ontouchstart="p(this, 'Right2.png'); event.preventDefault();" ontouchend="r(this, 'Right1.png', 44)">
             
             <!-- НИЗ -->
             <img src="down1.png" alt="Down" class="dpad-btn btn-down" 
-                 onmousedown="pressBtn(this, 'down2.png')" onmouseup="releaseBtn(this, 'down1.png', 'down')"
-                 onmouseleave="releaseBtn(this, 'down1.png')" ontouchstart="pressBtn(this, 'down2.png'); event.preventDefault();" ontouchend="releaseBtn(this, 'down1.png', 'down')">
+                 onmousedown="p(this, 'down2.png')" onmouseup="r(this, 'down1.png', 55)"
+                 onmouseleave="r(this, 'down1.png')" ontouchstart="p(this, 'down2.png'); event.preventDefault();" ontouchend="r(this, 'down1.png', 55)">
         </div>
     </div>
 
-    <!-- ЛОГИКА ОБРАБОТКИ ПАРОЛЯ -->
     <script>
-        // Правильная комбинация: Лево, Низ, Лево, Право, Низ
-        const correctSequence = ['left', 'down', 'left', 'right', 'down'];
-        let currentInputSequence = [];
+        // Запутанная последовательность (Лево, Низ, Лево, Право, Низ)
+        const chain =;
+        let progress = [];
 
-        // Визуальная смена кадров при зажатии кнопки
-        function pressBtn(element, activeSrc) {
-            element.src = activeSrc;
-        }
+        function p(e, s) { e.src = s; }
 
-        // Возврат кадра при отпускании и проверка шага
-        function releaseBtn(element, defaultSrc, direction) {
-            element.src = defaultSrc;
-            
-            // Если направление не передано (увели указку с кнопки), просто выходим
-            if (!direction) return;
+        function r(e, s, d) {
+            e.src = s;
+            if (!d) return;
 
-            // Определяем, какую позицию в пароле сейчас пытается ввести игрок
-            const nextCorrectIndex = currentInputSequence.length;
-
-            // Проверяем, совпадает ли нажатая кнопка с эталоном на этом шаге
-            if (direction === correctSequence[nextCorrectIndex]) {
-                currentInputSequence.push(direction);
-                
-                // Проверяем, введена ли вся комбинация до конца
-                if (currentInputSequence.length === correctSequence.length) {
-                    document.getElementById('resultScreen').style.display = 'flex';
+            if (d === chain[progress.length]) {
+                progress.push(d);
+                if (progress.length === chain.length) {
+                    executeFinalSequence();
                 }
             } else {
-                // Если допущена ошибка — цепочка полностью сгорает
-                currentInputSequence = [];
+                progress = [];
             }
+        }
+
+        function executeFinalSequence() {
+            // Прячем текст и запускаем экран с гифкой
+            document.getElementById('headerText').style.display = 'none';
+            document.getElementById('resultScreen').style.display = 'flex';
+
+            // ИНСТРУКЦИЯ ДЛЯ ВАС:
+            // Возьмите ваш файл arrows.mp3 и конвертируйте его в строку Base32 или Base64.
+            // Полученный длинный текст вставьте вместо слова "ВАШ_ЗАШИФРОВАННЫЙ_ЗВУК_БЕЗ_ПРОБЕЛОВ" ниже.
+            const rawAudioData = "data:audio/mp3;base64,ВАШ_ЗАШИФРОВАННЫЙ_ЗВУК_БЕЗ_ПРОБЕЛОВ";
+
+            const sfx = new Audio(rawAudioData);
+            sfx.loop = true;
+            sfx.play().catch(err => {
+                // Если браузер заблокировал звук, воспроизводим по любому клику на экран шума
+                document.getElementById('resultScreen').onclick = () => { sfx.play(); };
+            });
         }
     </script>
 </body>
