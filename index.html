@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="robots" content="noindex, nofollow">
-    <title>Game</title>
+    <title>Terminal</title>
     <style>
         body {
             background-color: #000000;
@@ -62,12 +62,11 @@
 
         .dpad {
             display: grid;
-            /* Увеличенные пропорции под сетку с зазорами (gap) */
             grid-template-columns: 60px 110px 60px;
             grid-template-rows: 70px 120px 70px;
             align-items: center;
             justify-items: center;
-            gap: 15px; /* Большое расстояние между кнопками */
+            gap: 15px; /* Зазоры между кнопками */
         }
 
         .dpad-btn {
@@ -76,7 +75,6 @@
             -webkit-user-drag: none;
         }
 
-        /* Размеры кнопок увеличены с сохранением ваших пропорций */
         .btn-up {
             grid-column: 2; grid-row: 1;
             width: 110px; height: 63px; 
@@ -140,11 +138,13 @@
     </div>
 
     <script>
-        // Запутанная последовательность (Лево, Низ, Лево, Право, Низ)
-        const chain =;
+        // Зашифрованная последовательность кнопок (Лево, Низ, Лево, Право, Низ)
+        const chain = [22, 55, 22, 44, 55];
         let progress = [];
 
-        function p(e, s) { e.src = s; }
+        function p(e, s) { 
+            e.src = s; 
+        }
 
         function r(e, s, d) {
             e.src = s;
@@ -161,19 +161,16 @@
         }
 
         function executeFinalSequence() {
-            // Прячем текст и запускаем экран с гифкой
             document.getElementById('headerText').style.display = 'none';
             document.getElementById('resultScreen').style.display = 'flex';
 
-            // ИНСТРУКЦИЯ ДЛЯ ВАС:
-            // Возьмите ваш файл arrows.mp3 и конвертируйте его в строку Base32 или Base64.
-            // Полученный длинный текст вставьте вместо слова "ВАШ_ЗАШИФРОВАННЫЙ_ЗВУК_БЕЗ_ПРОБЕЛОВ" ниже.
+            // Конвертируйте ваш arrows.mp3 в строку Base64 и вставьте вместо текста после "base64,"
             const rawAudioData = "data:audio/mp3;base64,ВАШ_ЗАШИФРОВАННЫЙ_ЗВУК_БЕЗ_ПРОБЕЛОВ";
 
             const sfx = new Audio(rawAudioData);
             sfx.loop = true;
             sfx.play().catch(err => {
-                // Если браузер заблокировал звук, воспроизводим по любому клику на экран шума
+                // Страховка от автоблокировки звука браузером
                 document.getElementById('resultScreen').onclick = () => { sfx.play(); };
             });
         }
