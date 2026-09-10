@@ -128,26 +128,47 @@
     </div>
 
     <script>
-        const chain = [22, 55, 22, 44, 55];
-        let progress = [];
+    // Предзагрузка всех изображений
+    const preloadImages = [
+        'up1.png',
+        'up2.png',
+        'LeFt1.png',
+        'LeFt2.png',
+        'centre1.png',
+        'centre2.png',
+        'Right1.png',
+        'Right2.png',
+        'down1.png',
+        'down2.png',
+        'noise.gif'
+    ];
 
-        function p(e, s) { 
-            e.src = s; 
-        }
+    preloadImages.forEach(src => {
+        const img = new Image();
+        img.src = src;
+    });
 
-        function r(e, s, d) {
-            e.src = s;
-            if (!d) return;
 
-            if (d === chain[progress.length]) {
-                progress.push(d);
-                if (progress.length === chain.length) {
-                    executeFinalSequence();
-                }
-            } else {
-                progress = [];
+    const chain = [22, 55, 22, 44, 55];
+    let progress = [];
+
+    function p(e, s) { 
+        e.src = s; 
+    }
+
+    function r(e, s, d) {
+        e.src = s;
+        if (!d) return;
+
+        if (d === chain[progress.length]) {
+            progress.push(d);
+            if (progress.length === chain.length) {
+                executeFinalSequence();
             }
+        } else {
+            progress = [];
         }
+    }
 
         function executeFinalSequence() {
             document.getElementById('headerText').style.display = 'none';
